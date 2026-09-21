@@ -5,7 +5,9 @@ Zenn Book「Unityで作る落ち物パズル(テトリス風) 入門」の教材
 
 - Unity: 6000.4.6f1(Universal 2D テンプレート)
 - 入力: Input System パッケージ(キーボード)
-- 公開: WebGL
+- 公開: WebGL(GitHub Pages)
+
+**デモ: https://kshojun.github.io/unity-falling-blocks/**(PC のブラウザ、キーボード操作)
 
 ## 章とタグ
 
@@ -39,6 +41,18 @@ git checkout chapter-5
 | Space | ハードドロップ |
 | C / Shift | HOLD |
 | R | リスタート(ゲームオーバー時) |
+
+## WebGL ビルド
+
+メニューの `Tools > Build WebGL`、またはコマンドラインで `docs/` フォルダに出力します。
+
+```sh
+/Applications/Unity/Hub/Editor/6000.4.6f1/Unity.app/Contents/MacOS/Unity \
+  -batchmode -nographics -projectPath . -buildTarget WebGL \
+  -executeMethod BuildScript.BuildWebGL -quit
+```
+
+GitHub Pages の設定で、公開元を `main` ブランチの `/docs` にします。
 
 ## 注意
 

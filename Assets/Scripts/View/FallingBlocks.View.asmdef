@@ -1,0 +1,16 @@
+{
+    "name": "FallingBlocks.View",
+    "rootNamespace": "FallingBlocks.View",
+    "references": [
+        "FallingBlocks.Logic"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

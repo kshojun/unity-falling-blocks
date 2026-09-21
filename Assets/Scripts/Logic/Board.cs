@@ -40,6 +40,21 @@ namespace FallingBlocks.Logic
             return cells[x, y] == 0;
         }
 
+        /// <summary>ミノの 4 マスがすべて空きマスの上にあるか。</summary>
+        public bool CanPlace(Piece piece)
+        {
+            for (int i = 0; i < TetrominoShapes.CellCount; i++)
+            {
+                var cell = piece.GetCell(i);
+                if (!IsEmpty(cell.X, cell.Y))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public void Clear()
         {
             System.Array.Clear(cells, 0, cells.Length);

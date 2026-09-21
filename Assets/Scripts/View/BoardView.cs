@@ -14,10 +14,8 @@ namespace FallingBlocks.View
 
         public void Initialize()
         {
-            var sprite = BlockSprite.Get();
-
             // 盤面の背景(少し大きい暗い四角形)
-            var background = CreateSquare("Background", sprite, transform);
+            var background = BlockSprite.CreateRenderer("Background", transform);
             background.transform.localPosition = new Vector3((Board.Width - 1) / 2f, (Board.Height - 1) / 2f, 0f);
             background.transform.localScale = new Vector3(Board.Width + 0.4f, Board.Height + 0.4f, 1f);
             background.color = new Color(0.03f, 0.03f, 0.05f);
@@ -28,7 +26,7 @@ namespace FallingBlocks.View
             {
                 for (int y = 0; y < Board.Height; y++)
                 {
-                    var cell = CreateSquare($"Cell({x},{y})", sprite, transform);
+                    var cell = BlockSprite.CreateRenderer($"Cell({x},{y})", transform);
                     cell.transform.localPosition = new Vector3(x, y, 0f);
                     cell.transform.localScale = new Vector3(CellScale, CellScale, 1f);
                     cellRenderers[x, y] = cell;
@@ -36,8 +34,8 @@ namespace FallingBlocks.View
             }
 
             // 着地位置の予告(ゴースト)と落下中のミノ用の 4 マスずつ。盤面のマスより手前に描く
-            ghostRenderers = CreatePieceRenderers("Ghost", sprite, 1);
-            pieceRenderers = CreatePieceRenderers("Piece", sprite, 2);
+            ghostRenderers = CreatePieceRenderers("Ghost", 1);
+            pieceRenderers = CreatePieceRenderers("Piece", 2);
         }
 
         /// <summary>積まれたブロック(盤面)と、落下中のミノ、着地位置のゴーストを描く。</summary>
@@ -71,27 +69,18 @@ namespace FallingBlocks.View
             }
         }
 
-        private SpriteRenderer[] CreatePieceRenderers(string namePrefix, Sprite sprite, int sortingOrder)
+        private SpriteRenderer[] CreatePieceRenderers(string namePrefix, int sortingOrder)
         {
             var renderers = new SpriteRenderer[TetrominoShapes.CellCount];
             for (int i = 0; i < renderers.Length; i++)
             {
-                var block = CreateSquare($"{namePrefix}{i}", sprite, transform);
+                var block = BlockSprite.CreateRenderer($"{namePrefix}{i}", transform);
                 block.transform.localScale = new Vector3(CellScale, CellScale, 1f);
                 block.sortingOrder = sortingOrder;
                 renderers[i] = block;
             }
 
             return renderers;
-        }
-
-        private static SpriteRenderer CreateSquare(string objectName, Sprite sprite, Transform parent)
-        {
-            var go = new GameObject(objectName);
-            go.transform.SetParent(parent, false);
-            var spriteRenderer = go.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = sprite;
-            return spriteRenderer;
         }
     }
 }

@@ -61,6 +61,13 @@ namespace FallingBlocks.View
                 state.TryRotate(-1);
             }
 
+            if (keyboard.cKey.wasPressedThisFrame
+                || keyboard.leftShiftKey.wasPressedThisFrame
+                || keyboard.rightShiftKey.wasPressedThisFrame)
+            {
+                state.TryHold();
+            }
+
             if (keyboard.spaceKey.wasPressedThisFrame)
             {
                 state.HardDrop();

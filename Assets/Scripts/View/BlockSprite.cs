@@ -22,5 +22,15 @@ namespace FallingBlocks.View
             cached = Sprite.Create(texture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1f);
             return cached;
         }
+
+        /// <summary>白い正方形を表示する SpriteRenderer 付きの GameObject を、parent の子として作る。</summary>
+        public static SpriteRenderer CreateRenderer(string objectName, Transform parent)
+        {
+            var go = new GameObject(objectName);
+            go.transform.SetParent(parent, false);
+            var spriteRenderer = go.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = Get();
+            return spriteRenderer;
+        }
     }
 }

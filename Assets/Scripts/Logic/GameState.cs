@@ -9,17 +9,48 @@ namespace FallingBlocks.Logic
     {
         private const float FallInterval = 1f;
 
-        private readonly Random random;
+        /// <summary>NEXT に表示するミノの数。</summary>
+        public const int NextCount = 3;
+
+        private readonly PieceBag bag;
         private float fallTimer;
+        private bool canHold = true;
 
         public Board Board { get; } = new Board();
         public Piece Current { get; private set; }
         public bool IsGameOver { get; private set; }
 
+        /// <summary>HOLD に入っているミノ。空なら null。</summary>
+        public TetrominoType? Held { get; private set; }
+
+        /// <summary>いま HOLD できるか。1 つのミノにつき 1 回だけ。</summary>
+        public bool CanHold => canHold;
+
         public GameState(Random random)
         {
-            this.random = random;
+            bag = new PieceBag(random);
             SpawnNext();
+        }
+
+        /// <summary>これから出るミノの先読み。index 0 が次に出るミノ。</summary>
+        public TetrominoType PeekNext(int index)
+        {
+            return bag.Peek(index);
+        }
+
+        /// <summary>落下中のミノを HOLD と入れ替える。HOLD が空なら、次のミノが出てくる。</summary>
+        public bool TryHold()
+        {
+            if (IsGameOver || !canHold)
+            {
+                return false;
+            }
+
+            var incoming = Held ?? bag.Next();
+            Held = Current.Type;
+            Spawn(incoming);
+            canHold = false;
+            return true;
         }
 
         /// <summary>時間を進める。一定時間ごとに、落下中のミノを 1 マス落とす。</summary>
@@ -141,7 +172,13 @@ namespace FallingBlocks.Logic
 
         private void SpawnNext()
         {
-            Current = Piece.Spawn((TetrominoType)random.Next(7));
+            Spawn(bag.Next());
+            canHold = true;
+        }
+
+        private void Spawn(TetrominoType type)
+        {
+            Current = Piece.Spawn(type);
             fallTimer = 0f;
 
             if (!Board.CanPlace(Current))

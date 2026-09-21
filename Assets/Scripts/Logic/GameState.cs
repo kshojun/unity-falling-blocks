@@ -7,10 +7,11 @@ namespace FallingBlocks.Logic
     /// </summary>
     public sealed class GameState
     {
-        private const float FallInterval = 1f;
-
         /// <summary>NEXT に表示するミノの数。</summary>
         public const int NextCount = 3;
+
+        private const int LinesPerLevel = 10;
+        private const float MinFallInterval = 0.05f;
 
         private readonly PieceBag bag;
         private float fallTimer;
@@ -19,6 +20,15 @@ namespace FallingBlocks.Logic
         public Board Board { get; } = new Board();
         public Piece Current { get; private set; }
         public bool IsGameOver { get; private set; }
+
+        public int Score { get; private set; }
+        public int Lines { get; private set; }
+
+        /// <summary>レベルは 1 から始まり、10 ライン消すごとに 1 つ上がる。</summary>
+        public int Level => Lines / LinesPerLevel + 1;
+
+        /// <summary>1 マス落ちるまでの秒数。レベルが上がるほど短くなる。</summary>
+        public float FallInterval => GetFallInterval(Level);
 
         /// <summary>HOLD に入っているミノ。空なら null。</summary>
         public TetrominoType? Held { get; private set; }
@@ -115,6 +125,7 @@ namespace FallingBlocks.Logic
 
             Current = moved;
             fallTimer = 0f;
+            Score += ScoreCalculator.SoftDropPointsPerCell;
             return true;
         }
 
@@ -126,7 +137,9 @@ namespace FallingBlocks.Logic
                 return;
             }
 
-            Current = GetGhost();
+            var landing = GetGhost();
+            Score += (Current.Y - landing.Y) * ScoreCalculator.HardDropPointsPerCell;
+            Current = landing;
             LockCurrent();
         }
 
@@ -158,7 +171,11 @@ namespace FallingBlocks.Logic
         private void LockCurrent()
         {
             bool allInside = Board.Place(Current);
-            Board.ClearFullLines();
+
+            // 得点は、行を消す前のレベルで計算する
+            int cleared = Board.ClearFullLines();
+            Score += ScoreCalculator.LineClear(cleared, Level);
+            Lines += cleared;
 
             if (!allInside)
             {
@@ -168,6 +185,15 @@ namespace FallingBlocks.Logic
             }
 
             SpawnNext();
+        }
+
+        /// <summary>
+        /// レベルごとの落下間隔。1 秒から始まり、レベルが上がるほど指数的に短くなる。
+        /// </summary>
+        public static float GetFallInterval(int level)
+        {
+            double seconds = Math.Pow(0.8 - (level - 1) * 0.007, level - 1);
+            return Math.Max(MinFallInterval, (float)seconds);
         }
 
         private void SpawnNext()

@@ -10,6 +10,7 @@ namespace FallingBlocks.View
 
         private GameState state;
         private BoardView boardView;
+        private HudView hudView;
         private PreviewView holdView;
         private PreviewView[] nextViews;
         private readonly InputHandler input = new InputHandler();
@@ -19,6 +20,10 @@ namespace FallingBlocks.View
             var boardObject = new GameObject("BoardView");
             boardView = boardObject.AddComponent<BoardView>();
             boardView.Initialize();
+
+            var hudObject = new GameObject("HudView");
+            hudView = hudObject.AddComponent<HudView>();
+            hudView.Initialize();
 
             // 左に HOLD、右に NEXT を並べる
             WorldText.Create("HoldLabel", transform, "HOLD", new Vector3(-4f, 18.6f, 0f), TextAnchor.MiddleCenter, LabelColor);
@@ -46,6 +51,7 @@ namespace FallingBlocks.View
 
             CameraFitter.Fit(Camera.main);
             boardView.Render(state.Board, state.Current, state.GetGhost());
+            hudView.Show(state);
 
             // HOLD できない間は暗く表示する
             holdView.Show(state.Held, state.CanHold ? 1f : 0.35f);

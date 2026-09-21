@@ -11,7 +11,7 @@ namespace FallingBlocks.View
         private static Font font;
 
         public static TextMesh Create(string objectName, Transform parent, string text, Vector3 localPosition,
-            TextAnchor anchor, Color color)
+            TextAnchor anchor, Color color, float scale = 1f)
         {
             if (font == null)
             {
@@ -30,7 +30,7 @@ namespace FallingBlocks.View
 
             // 文字を大きめに作って縮小すると、拡大表示してもぼやけない
             mesh.fontSize = 64;
-            mesh.characterSize = 0.1f;
+            mesh.characterSize = 0.1f * scale;
 
             go.GetComponent<MeshRenderer>().sharedMaterial = font.material;
             return mesh;

@@ -13,7 +13,7 @@ namespace FallingBlocks.Logic
         private const int LinesPerLevel = 10;
         private const float MinFallInterval = 0.05f;
 
-        private readonly PieceBag bag;
+        private readonly IPieceSource pieces;
         private float fallTimer;
         private bool canHold = true;
 
@@ -36,16 +36,22 @@ namespace FallingBlocks.Logic
         /// <summary>いま HOLD できるか。1 つのミノにつき 1 回だけ。</summary>
         public bool CanHold => canHold;
 
-        public GameState(Random random)
+        /// <summary>ふつうの 7-bag ランダムでゲームを始める。</summary>
+        public GameState(Random random) : this(new PieceBag(random))
         {
-            bag = new PieceBag(random);
+        }
+
+        /// <summary>ミノの供給元を指定してゲームを始める(テストで並びを固定したいときに使う)。</summary>
+        public GameState(IPieceSource pieces)
+        {
+            this.pieces = pieces;
             SpawnNext();
         }
 
         /// <summary>これから出るミノの先読み。index 0 が次に出るミノ。</summary>
         public TetrominoType PeekNext(int index)
         {
-            return bag.Peek(index);
+            return pieces.Peek(index);
         }
 
         /// <summary>落下中のミノを HOLD と入れ替える。HOLD が空なら、次のミノが出てくる。</summary>
@@ -56,7 +62,7 @@ namespace FallingBlocks.Logic
                 return false;
             }
 
-            var incoming = Held ?? bag.Next();
+            var incoming = Held ?? pieces.Next();
             Held = Current.Type;
             Spawn(incoming);
             canHold = false;
@@ -198,7 +204,7 @@ namespace FallingBlocks.Logic
 
         private void SpawnNext()
         {
-            Spawn(bag.Next());
+            Spawn(pieces.Next());
             canHold = true;
         }
 

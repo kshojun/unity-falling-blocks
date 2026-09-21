@@ -7,7 +7,7 @@ namespace FallingBlocks.Logic
     /// 7-bag ランダマイザ。7 種類のミノを 1 袋にしてシャッフルし、順番に配る。
     /// 袋が空になったらまた新しい袋を作るので、同じミノが極端に続かない。
     /// </summary>
-    public sealed class PieceBag
+    public sealed class PieceBag : IPieceSource
     {
         private const int TypeCount = 7;
 

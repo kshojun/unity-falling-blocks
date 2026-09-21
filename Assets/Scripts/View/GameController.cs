@@ -8,6 +8,7 @@ namespace FallingBlocks.View
     {
         private GameState state;
         private BoardView boardView;
+        private readonly InputHandler input = new InputHandler();
 
         private void Start()
         {
@@ -21,14 +22,14 @@ namespace FallingBlocks.View
 
         private void Update()
         {
-            // 操作はまだ作っていないので、ゲームオーバーになったら自動でやり直す
-            if (state.IsGameOver)
+            input.Update(state, Time.deltaTime);
+            if (input.RestartRequested)
             {
                 state = new GameState(new System.Random());
             }
 
             state.Tick(Time.deltaTime);
-            boardView.Render(state.Board, state.Current);
+            boardView.Render(state.Board, state.Current, state.GetGhost());
         }
 
         private static void SetupCamera()

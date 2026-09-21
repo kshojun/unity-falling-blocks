@@ -38,6 +38,79 @@ namespace FallingBlocks.Logic
             }
         }
 
+        /// <summary>左右に 1 マス動かす。動かせたら true。</summary>
+        public bool TryMove(int dx)
+        {
+            if (IsGameOver)
+            {
+                return false;
+            }
+
+            var moved = Current.Moved(dx, 0);
+            if (!Board.CanPlace(moved))
+            {
+                return false;
+            }
+
+            Current = moved;
+            return true;
+        }
+
+        /// <summary>direction が +1 なら時計回り、-1 なら反時計回りに回す。回せたら true。</summary>
+        public bool TryRotate(int direction)
+        {
+            if (IsGameOver || !RotationRules.TryRotate(Board, Current, direction, out var rotated))
+            {
+                return false;
+            }
+
+            Current = rotated;
+            return true;
+        }
+
+        /// <summary>自分の操作で 1 マス落とす(ソフトドロップ)。落とせたら true。</summary>
+        public bool SoftDrop()
+        {
+            if (IsGameOver)
+            {
+                return false;
+            }
+
+            var moved = Current.Moved(0, -1);
+            if (!Board.CanPlace(moved))
+            {
+                return false;
+            }
+
+            Current = moved;
+            fallTimer = 0f;
+            return true;
+        }
+
+        /// <summary>いちばん下まで一気に落として、その場に固定する(ハードドロップ)。</summary>
+        public void HardDrop()
+        {
+            if (IsGameOver)
+            {
+                return;
+            }
+
+            Current = GetGhost();
+            LockCurrent();
+        }
+
+        /// <summary>いま落とした場合に着地する位置(ゴースト表示用)。</summary>
+        public Piece GetGhost()
+        {
+            var landing = Current;
+            while (Board.CanPlace(landing.Moved(0, -1)))
+            {
+                landing = landing.Moved(0, -1);
+            }
+
+            return landing;
+        }
+
         /// <summary>1 マス落とす。落とせなければその場に固定して、次のミノを出す。</summary>
         private void StepDown()
         {

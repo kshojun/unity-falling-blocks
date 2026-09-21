@@ -2,7 +2,8 @@
     "name": "FallingBlocks.View",
     "rootNamespace": "FallingBlocks.View",
     "references": [
-        "FallingBlocks.Logic"
+        "FallingBlocks.Logic",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

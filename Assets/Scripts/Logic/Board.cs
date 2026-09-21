@@ -55,6 +55,79 @@ namespace FallingBlocks.Logic
             return true;
         }
 
+        /// <summary>
+        /// ミノの 4 マスを盤面に書き込む(固定する)。
+        /// 盤面より上にはみ出したマスがあれば、その分は書き込まず false を返す。
+        /// </summary>
+        public bool Place(Piece piece)
+        {
+            bool allInside = true;
+            for (int i = 0; i < TetrominoShapes.CellCount; i++)
+            {
+                var cell = piece.GetCell(i);
+                if (cell.Y >= Height)
+                {
+                    allInside = false;
+                    continue;
+                }
+
+                cells[cell.X, cell.Y] = (int)piece.Type + 1;
+            }
+
+            return allInside;
+        }
+
+        /// <summary>揃った行を消して、上の行を詰める。消した行数を返す。</summary>
+        public int ClearFullLines()
+        {
+            int cleared = 0;
+            int writeY = 0;
+
+            // 下の行から順に見て、揃っていない行だけを下へ詰めてコピーしていく
+            for (int y = 0; y < Height; y++)
+            {
+                if (IsRowFull(y))
+                {
+                    cleared++;
+                    continue;
+                }
+
+                if (writeY != y)
+                {
+                    for (int x = 0; x < Width; x++)
+                    {
+                        cells[x, writeY] = cells[x, y];
+                    }
+                }
+
+                writeY++;
+            }
+
+            // 詰めた分だけ空いた最上段側を空にする
+            for (int y = writeY; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    cells[x, y] = 0;
+                }
+            }
+
+            return cleared;
+        }
+
+        private bool IsRowFull(int y)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                if (cells[x, y] == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public void Clear()
         {
             System.Array.Clear(cells, 0, cells.Length);

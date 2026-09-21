@@ -9,6 +9,7 @@ namespace FallingBlocks.View
         private const float CellScale = 0.94f;
 
         private SpriteRenderer[,] cellRenderers;
+        private SpriteRenderer[] pieceRenderers;
 
         public void Initialize()
         {
@@ -32,9 +33,20 @@ namespace FallingBlocks.View
                     cellRenderers[x, y] = cell;
                 }
             }
+
+            // 落下中のミノ用の 4 マス。盤面のマスより手前に描く
+            pieceRenderers = new SpriteRenderer[TetrominoShapes.CellCount];
+            for (int i = 0; i < pieceRenderers.Length; i++)
+            {
+                var block = CreateSquare($"Piece{i}", sprite, transform);
+                block.transform.localScale = new Vector3(CellScale, CellScale, 1f);
+                block.sortingOrder = 1;
+                pieceRenderers[i] = block;
+            }
         }
 
-        public void Render(Board board)
+        /// <summary>積まれたブロック(盤面)と、落下中のミノを描く。</summary>
+        public void Render(Board board, Piece piece)
         {
             for (int x = 0; x < Board.Width; x++)
             {
@@ -42,6 +54,18 @@ namespace FallingBlocks.View
                 {
                     cellRenderers[x, y].color = BlockColors.Of(board.Get(x, y));
                 }
+            }
+
+            var color = BlockColors.Of((int)piece.Type + 1);
+            for (int i = 0; i < pieceRenderers.Length; i++)
+            {
+                var cell = piece.GetCell(i);
+                var block = pieceRenderers[i];
+
+                // 盤面より上にはみ出したマスは表示しない
+                block.enabled = cell.Y < Board.Height;
+                block.transform.localPosition = new Vector3(cell.X, cell.Y, 0f);
+                block.color = color;
             }
         }
 

@@ -17,6 +17,15 @@ namespace FallingBlocks.View
         {
             board = new Board();
 
+            // 動作確認用: 積まれたブロックとして、下の方にいくつか置いておく
+            for (int x = 0; x < Board.Width; x++)
+            {
+                board.Set(x, 0, x % 7 + 1);
+            }
+            board.Set(3, 1, 3);
+            board.Set(4, 1, 3);
+            board.Set(4, 2, 5);
+
             var boardObject = new GameObject("BoardView");
             boardView = boardObject.AddComponent<BoardView>();
             boardView.Initialize();
@@ -34,21 +43,11 @@ namespace FallingBlocks.View
                 UpdateDemo();
             }
 
-            // デモ用: 盤面を空にして、ミノの 4 マスだけを書き込む
-            board.Clear();
-            for (int i = 0; i < TetrominoShapes.CellCount; i++)
-            {
-                var cell = demoPiece.GetCell(i);
-                board.Set(cell.X, cell.Y, (int)demoPiece.Type + 1);
-            }
-
-            boardView.Render(board);
+            boardView.Render(board, demoPiece);
         }
 
         private void UpdateDemo()
         {
-            // 前フレームで書き込んだミノ自身に当たらないよう、判定の前に盤面を空にする
-            board.Clear();
             if (!RotationRules.TryRotate(board, demoPiece, 1, out var rotated))
             {
                 return;

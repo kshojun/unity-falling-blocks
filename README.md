@@ -7,7 +7,8 @@ Zenn Book「Unityで作る落ち物パズル(テトリス風) 入門」の教材
 - 入力: Input System パッケージ(キーボード)
 - 公開: WebGL(GitHub Pages)
 
-**デモ: https://kshojun.github.io/unity-falling-blocks/**(PC のブラウザ、キーボード操作)
+デモ: https://kshojun.github.io/unity-falling-blocks/
+(PCのブラウザ、キーボード操作)
 
 ## 章とタグ
 
